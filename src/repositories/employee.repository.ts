@@ -16,3 +16,7 @@ export async function findById(id: number) {
 
   return result.rows[0];
 }
+
+export const employeeRepository = {
+  findById,
+};

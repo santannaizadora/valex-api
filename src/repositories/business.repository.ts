@@ -1,5 +1,5 @@
 import { connection } from "../database.js";
-import { TransactionTypes } from "./cardRepository.js";
+import { TransactionTypes } from "./card.repository.js";
 
 export interface Business {
   id: number;
