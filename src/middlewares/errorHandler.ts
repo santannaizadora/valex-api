@@ -19,6 +19,12 @@ export const errorHandler = (
     });
   }
 
+  if(err.type==="forbidden"){
+    return res.status(403).send({
+      message: err.message,
+    });
+  }
+
   return res.status(500).send({
     message: "Something went wrong",
   });

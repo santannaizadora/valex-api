@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import Cryptr from 'cryptr'
-import { cardRepository } from "../repositories/card.repository.js"
+import { CardInsertData, cardRepository } from "../repositories/card.repository.js"
 import { faker } from '@faker-js/faker';
 import { TransactionTypes } from "../repositories/card.repository.js"
 import { Employee } from "../repositories/employee.repository.js"
@@ -9,7 +9,7 @@ import '../setup.js'
 
 const cryptr = new Cryptr(process.env.ENCRYPTION_KEY);
 
-const createCardData = (type: TransactionTypes, employee: Employee) => {
+const cardInsertData = (type: TransactionTypes, employee: Employee): CardInsertData => {
     const expirationDate = dayjs().add(5, 'year').format('MM/YY')
     const cardholderName = formatCardName(employee.fullName);
     const cvv = faker.finance.creditCardCVV();
@@ -32,7 +32,7 @@ const createCardData = (type: TransactionTypes, employee: Employee) => {
 }
 
 const createCard = async (type: TransactionTypes, employee: Employee) => {
-    const data = createCardData(type, employee);
+    const data = cardInsertData(type, employee);
 
     const employeeHaveCardType = await cardRepository.findByTypeAndEmployeeId(type, employee.id);
     if (employeeHaveCardType) {
@@ -45,6 +45,15 @@ const createCard = async (type: TransactionTypes, employee: Employee) => {
     await cardRepository.insert(data);
 }
 
+const activateCard = async (id: number, cvv: string, password: string) => {
+    const encryptedPassword = cryptr.encrypt(password);
+    await cardRepository.update(id, {
+        isBlocked: false,
+        password: encryptedPassword,
+    });
+}
+
 export const cardService = {
     createCard,
+    activateCard,
 }
