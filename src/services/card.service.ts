@@ -1,6 +1,8 @@
 import dayjs from 'dayjs'
 import Cryptr from 'cryptr'
 import { CardInsertData, cardRepository } from "../repositories/card.repository.js"
+import { rechargeRepository } from '../repositories/recharge.repository.js';
+import { paymentRepository } from '../repositories/payment.repository.js';
 import { faker } from '@faker-js/faker';
 import { TransactionTypes } from "../repositories/card.repository.js"
 import { Employee } from "../repositories/employee.repository.js"
@@ -53,7 +55,33 @@ const activateCard = async (id: number, cvv: string, password: string) => {
     });
 }
 
+const getBalance = async (id: number) => {
+    const balance = 0;
+    const recharges = await rechargeRepository.findByCardId(id);
+    const payments = await paymentRepository.findByCardId(id);
+
+    const totalRecharges = recharges.reduce((acc, recharge) => acc + recharge.amount, 0);
+    const totalPayments = payments.reduce((acc, payment) => acc + payment.amount, 0);
+
+    return totalRecharges - totalPayments;
+}
+
+const blockCard = async (id: number) => {
+    await cardRepository.update(id, {
+        isBlocked: true,
+    });
+}
+
+const unblockCard = async (id: number) => {
+    await cardRepository.update(id, {
+        isBlocked: false,
+    });
+}
+
 export const cardService = {
     createCard,
     activateCard,
-}
+    getBalance,
+    blockCard,
+    unblockCard,
+};

@@ -23,7 +23,7 @@ export const passwordIsValid = (req: Request, res: Response, next: NextFunction)
 }
 
 export const cardExists = async (req: Request, res: Response, next: NextFunction) => {
-    const { id }: { id: number } = req.body;
+    const { id }: { id: number } = req.body || req.params as any;
     const card = await cardRepository.findById(id);
     if (!card) {
         return res.status(404).json({
