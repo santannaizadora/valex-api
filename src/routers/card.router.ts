@@ -1,7 +1,17 @@
 import { Router } from "express";
-import { companyHasValidKey, employeeIsRegistered, cardTypeIsValid } from "../middlewares/createCardMiddleware.js";
-import { passwordIsValid, cardExists, cvvIsValid, cardIsNotExpired, cardIsNotActivated } from "../middlewares/activateCardMiddleware.js";
-import { cardIsAlreadyBlocked, cardIsNotBlocked } from "../middlewares/blockUnblockCard.js";
+import { companyHasValidKey } from "../middlewares/companyValidations.js";
+import { employeeIsRegistered } from "../middlewares/employeeValidations.js";
+import {
+    passwordIsValid,
+    cardExists,
+    cvvIsValid,
+    cardIsNotExpired,
+    cardIsActivated,
+    cardTypeIsValid,
+    cardIsAlreadyBlocked,
+    cardIsNotBlocked,
+    passwordIsCorrect
+} from "../middlewares/cardValidations.js";
 import { createCard, activateCard, getBalance, blockCard, unblockCard } from "../controllers/card.controller.js";
 
 const router = Router();
@@ -13,12 +23,12 @@ router.post("/new",
     createCard
 );
 
-router.post("/activate",
+router.post("/activate/:id",
     passwordIsValid,
     cardExists,
     cvvIsValid,
     cardIsNotExpired,
-    cardIsNotActivated,
+    cardIsActivated,
     activateCard
 );
 
@@ -31,7 +41,7 @@ router.post("/block/:id",
     cardExists,
     cardIsNotExpired,
     cardIsAlreadyBlocked,
-    passwordIsValid,
+    passwordIsCorrect,
     blockCard
 );
 
@@ -39,7 +49,7 @@ router.post("/unblock/:id",
     cardExists,
     cardIsNotExpired,
     cardIsNotBlocked,
-    passwordIsValid,
+    passwordIsCorrect,
     unblockCard
 );
 

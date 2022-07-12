@@ -9,7 +9,8 @@ export const createCard = async (req: Request, res: Response) => {
 }
 
 export const activateCard = async (req: Request, res: Response) => {
-    const { id, cvv, password }: {id: number, cvv: string, password: string}= req.body;
+    const { id }: {id: number} = req.params as any;
+    const { cvv, password }: { cvv: string, password: string}= req.body;
     await cardService.activateCard(id, cvv, password);
     res.sendStatus(200);
 }

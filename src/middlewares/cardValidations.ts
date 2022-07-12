@@ -1,9 +1,63 @@
 import { Request, Response, NextFunction } from "express";
+import { TransactionTypes } from "../repositories/card.repository.js";
 import { cardRepository } from "../repositories/card.repository.js";
 import Cryptr from 'cryptr'
 import dayjs from "dayjs";
 
 const cryptr = new Cryptr(process.env.ENCRYPTION_KEY);
+
+export const cardTypeIsValid = (req: Request, res: Response, next: NextFunction) => {
+    const { type }: { type: TransactionTypes } = req.body;
+    const validTypes = ["groceries", "restaurant", "transport", "education", "health"]
+
+    if (!type) {
+        return res.status(400).send({
+            message: "Missing type"
+        });
+    }
+    if (!validTypes.includes(type)) {
+        return res.status(400).send({
+            message: "Invalid type"
+        });
+    }
+
+    next();
+}
+
+export const passwordIsCorrect = (req: Request, res: Response, next: NextFunction) => {
+    const { password } = req.body;
+    const { card } = res.locals;
+    const decryptedPassword = cryptr.decrypt(card.password);
+    if (decryptedPassword !== password) {
+        return res.status(400).json({
+            message: "Invalid password"
+        });
+    }
+
+    next();
+}
+
+export const cardIsAlreadyBlocked = async (req: Request, res: Response, next: NextFunction) => {
+    const { card } = res.locals;
+    if (card.isBlocked) {
+        return res.status(400).json({
+            message: "Card is already blocked"
+        });
+    }
+
+    next();
+}
+
+export const cardIsNotBlocked = async (req: Request, res: Response, next: NextFunction) => {
+    const { card } = res.locals;
+    if (!card.isBlocked) {
+        return res.status(400).json({
+            message: "Card is not blocked"
+        });
+    }
+
+    next();
+}
 
 export const passwordIsValid = (req: Request, res: Response, next: NextFunction) => {
     const { password } = req.body;
@@ -23,7 +77,7 @@ export const passwordIsValid = (req: Request, res: Response, next: NextFunction)
 }
 
 export const cardExists = async (req: Request, res: Response, next: NextFunction) => {
-    const { id }: { id: number } = req.body || req.params as any;
+    const { id }: { id: number } = req.params as any;
     const card = await cardRepository.findById(id);
     if (!card) {
         return res.status(404).json({
@@ -61,7 +115,7 @@ export const cardIsNotExpired = (req: Request, res: Response, next: NextFunction
     next();
 }
 
-export const cardIsNotActivated = (req: Request, res: Response, next: NextFunction) => {
+export const cardIsActivated = (req: Request, res: Response, next: NextFunction) => {
     const { card } = res.locals;
     if (card.password !== null) {
         return res.status(400).json({
