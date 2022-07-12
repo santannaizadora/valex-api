@@ -71,7 +71,6 @@ const getBalance = async (id: number) => {
         recharges: recharges,
     }
 
-
     return data;
 }
 

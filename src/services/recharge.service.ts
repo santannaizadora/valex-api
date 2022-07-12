@@ -7,13 +7,10 @@ const createRechargeData = (id : number, amount : number) : RechargeInsertData =
     }
 }
 
-
 const recharge = async (id : number, amount : number) => {
     const data = createRechargeData(id, amount);
     await rechargeRepository.insert(data);
 }
-
-
 
 export const rechargeService = {
     recharge
