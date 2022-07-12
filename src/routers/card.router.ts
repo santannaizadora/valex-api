@@ -6,13 +6,20 @@ import {
     cardExists,
     cvvIsValid,
     cardIsNotExpired,
-    cardIsActivated,
+    cardIsAlreadyActivated,
     cardTypeIsValid,
     cardIsAlreadyBlocked,
     cardIsNotBlocked,
     passwordIsCorrect
 } from "../middlewares/cardValidations.js";
-import { createCard, activateCard, getBalance, blockCard, unblockCard } from "../controllers/card.controller.js";
+
+import {
+    createCard,
+    activateCard,
+    getBalance,
+    blockCard,
+    unblockCard
+} from "../controllers/card.controller.js";
 
 const router = Router();
 
@@ -28,11 +35,11 @@ router.post("/activate/:id",
     cardExists,
     cvvIsValid,
     cardIsNotExpired,
-    cardIsActivated,
+    cardIsAlreadyActivated,
     activateCard
 );
 
-router.get("/balance:id",
+router.get("/balance/:id",
     cardExists,
     getBalance
 );

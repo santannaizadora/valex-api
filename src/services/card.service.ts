@@ -56,14 +56,23 @@ const activateCard = async (id: number, cvv: string, password: string) => {
 }
 
 const getBalance = async (id: number) => {
-    const balance = 0;
+    let balance = 0;
     const recharges = await rechargeRepository.findByCardId(id);
     const payments = await paymentRepository.findByCardId(id);
 
     const totalRecharges = recharges.reduce((acc, recharge) => acc + recharge.amount, 0);
     const totalPayments = payments.reduce((acc, payment) => acc + payment.amount, 0);
 
-    return totalRecharges - totalPayments;
+    balance = totalRecharges - totalPayments;
+
+    const data = {
+        balance,
+        transactions: payments,
+        recharges: recharges,
+    }
+
+
+    return data;
 }
 
 const blockCard = async (id: number) => {

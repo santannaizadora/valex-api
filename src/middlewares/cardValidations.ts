@@ -115,11 +115,22 @@ export const cardIsNotExpired = (req: Request, res: Response, next: NextFunction
     next();
 }
 
-export const cardIsActivated = (req: Request, res: Response, next: NextFunction) => {
+export const cardIsAlreadyActivated = (req: Request, res: Response, next: NextFunction) => {
     const { card } = res.locals;
     if (card.password !== null) {
         return res.status(400).json({
             message: "Card is already activated"
+        });
+    }
+
+    next();
+}
+
+export const cardIsActivated = (req: Request, res: Response, next: NextFunction) => {
+    const { card } = res.locals;
+    if (card.password === null) {
+        return res.status(400).json({
+            message: "Card is not activated"
         });
     }
 
